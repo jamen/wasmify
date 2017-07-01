@@ -3,7 +3,7 @@
   "description": "Require WASM modules from Browserify",
   "author": "Jamen Marz (https://git.io/jamen)",
   "repository": "jamen/wasm-load",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "lib/",
   "license": "MIT",
   "browser": {
