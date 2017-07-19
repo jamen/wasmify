@@ -1,20 +1,12 @@
 {
   "name": "wasmify",
-  "description": "Require WASM modules from Browserify",
+  "description": "Require WASM modules with Browserify",
   "author": "Jamen Marz (https://git.io/jamen)",
-  "repository": "jamen/wasm-load",
+  "repository": "jamen/wasmify",
   "version": "0.1.0",
-  "main": "lib/",
   "license": "MIT",
-  "browser": {
-    "fs": "brfs"
-  },
   "dependencies": {
-    "acorn": "^5.0.3",
-    "brfs": "^1.4.3",
     "escodegen": "^1.8.1",
-    "estree-walker": "^0.4.0",
-    "resolve": "^1.3.3",
     "stream-reduce": "^1.0.3",
     "string-to-arraybuffer": "^1.0.0",
     "through2": "^2.0.3"
@@ -27,8 +19,5 @@
     "load",
     "loader",
     "require"
-  ],
-  "devDependencies": {
-    "esvalid": "^1.1.0"
-  }
+  ]
 }
