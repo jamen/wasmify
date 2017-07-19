@@ -3,7 +3,7 @@
   "description": "Require WASM modules with Browserify",
   "author": "Jamen Marz (https://git.io/jamen)",
   "repository": "jamen/wasmify",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "MIT",
   "dependencies": {
     "escodegen": "^1.8.1",
