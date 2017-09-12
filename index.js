@@ -1,59 +1,34 @@
 
-var through = require('through2')
-var reduce = require('stream-reduce')
-var escodegen = require('escodegen')
-
-var WASM_FILE = /\.wasm$/
+const fs = require('fs')
+const through = require('through2')
 
 module.exports = function wasmify (filepath, options) {
-  // Transform WASM requires 
-  if (WASM_FILE.test(filepath)) {
-    return collect(function (contents, enc, done) {
-      contents = resolveWasmFile(contents)
-      done(null, Buffer.from(contents))
+  // Skip non-wasm files
+  if (!/\.wasm$/.test(filepath)) {
+    console.log('skipped boi', filepath)
+    return through()
+  }
+
+  const thru = through({ encoding: 'binary' }, write, end)
+
+  function write (buf, enc, next) {
+    next()
+  }
+
+  function end () {
+    fs.readFile(filepath, 'base64', (err, contents) => {
+      const jsFile = wasmToJS(contents)
+      console.log(jsFile.toString())
+      this.push(jsFile)
+      this.push(null)
     })
   }
 
-  // Pass all other files
-  return through()
+  function wasmToJS (wasm) {
+    return Buffer.from(`
+      module.exports=require('wasmify/load')('${wasm}')
+    `.trim(), 'binary')
+  } 
+
+  return thru
 }
-
-function collect (fn) {
-  return reduce(function (chunk, contents) {
-    if (!contents) return chunk
-    return Buffer.concat([contents, chunk])
-  }, Buffer.alloc(0))
-  .pipe(through(fn))
-}
-
-function resolveWasmFile (wasmModule, done) {
-  return escodegen.generate({
-    type: 'Program',
-    body: [
-      {
-        type: 'ExpressionStatement',
-        expression: {
-          type: 'AssignmentExpression',
-          operator: '=',
-          left: {
-            type: 'MemberExpression',
-            object: { type: 'Identifier', name: 'module' },
-            property: { type: 'Identifier', name: 'exports' },
-            computed: false
-          },
-          right: {
-            type: 'CallExpression',
-            callee: {
-              type: 'CallExpression',
-              callee: { type: 'Identifier', name: 'require' },
-              arguments: [ { type: 'Literal', value: 'wasmify/load' } ]
-            },
-            arguments: [ { type: 'Literal', value: wasmModule.toString('base64') } ]
-          }
-        }
-      }
-    ]
-  })
-}
-
-

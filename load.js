@@ -1,9 +1,10 @@
 
-var str2ab = require('string-to-arraybuffer')
+var { decode } = require('base64-arraybuffer')
 
 module.exports = function (src) {
   return function (imports) {
-    return WebAssembly.instantiate(str2ab(src), imports)
-    .then(w => w.instance.exports)
+    return WebAssembly.compile(decode(src))
+      .then(mod => WebAssembly.Instance(mod, imports))
+      .then(ins => ins.exports)
   }  
 }
