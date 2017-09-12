@@ -5,7 +5,6 @@ const through = require('through2')
 module.exports = function wasmify (filepath, options) {
   // Skip non-wasm files
   if (!/\.wasm$/.test(filepath)) {
-    console.log('skipped boi', filepath)
     return through()
   }
 
@@ -18,16 +17,13 @@ module.exports = function wasmify (filepath, options) {
   function end () {
     fs.readFile(filepath, 'base64', (err, contents) => {
       const jsFile = wasmToJS(contents)
-      console.log(jsFile.toString())
       this.push(jsFile)
       this.push(null)
     })
   }
 
   function wasmToJS (wasm) {
-    return Buffer.from(`
-      module.exports=require('wasmify/load')('${wasm}')
-    `.trim(), 'binary')
+    return Buffer.from(`module.exports=require('wasmify/load')('${wasm}')`)
   } 
 
   return thru
