@@ -1,30 +1,42 @@
 
 const fs = require('fs')
+const spawn = require('child_process').spawn
 const through = require('through2')
+const temp = require('tempy').file
 
 module.exports = function wasmify (filepath, options) {
-  // Skip non-wasm files
-  if (!/\.wasm$/.test(filepath)) {
+  if (!/\.wa(t|st|sm)$/.test(filepath)) {
     return through()
   }
 
-  const thru = through({ encoding: 'binary' }, write, end)
+  let isWasm = /\.wasm$/.test(filepath) 
 
-  function write (buf, enc, next) {
+  function noread (buf, enc, next) {
     next()
   }
 
   function end () {
-    fs.readFile(filepath, 'base64', (err, contents) => {
-      const jsFile = wasmToJS(contents)
-      this.push(jsFile)
+    const finish = (err, wasm) => {
+      if (err) return this.emit('error', err)
+      this.push(`module.exports=require('wasmify/load')('${wasm}')`)
       this.push(null)
+    }
+
+    fs.readFile(filepath, 'base64', (err, contents) => {
+      if (isWasm) {
+        finish(err, contents)
+      } else {
+        const temppath = temp({ extension: 'wasm' })
+        const args = [filepath, '-o', temppath]
+        spawn('wat2wasm', args, { stdio: 'inherit' }).on('close', () => {
+          fs.readFile(temppath, 'base64', (e1, contents) => {
+            fs.unlink(temppath, e2 => finish(e1 || e2, contents))
+          })
+        })
+      }  
     })
   }
 
-  function wasmToJS (wasm) {
-    return Buffer.from(`module.exports=require('wasmify/load')('${wasm}')`)
-  } 
-
-  return thru
+  return through(noread, end)
 }
+

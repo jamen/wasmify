@@ -1,27 +1,11 @@
 
 # wasmify
 
-> Require WASM modules with Browserify
+> Bundle WebAssembly modules with Browserify.
 
-This is a [Browserify](https://npmjs.com/browserify) transform that enables you to require `.wasm` files.
+Use this [Browserify transform](https://npmjs.com/browserify) to import [WebAssembly](http://webassembly.org) modules.  All of the `.wasm` files (binary format) are embed in your bundle as base64 strings and compiled for you.  Additionally, `.wat` or `.wast` files (text format) are compiled with [WABT's `wat2wasm` command](https://github.com/webassembly/wabt) before being embed (see also [`webassemby-binary-toolkit`](https://npmjs.com/webassembly-binary-toolkit)).
 
-```js
-var example = require('./example.wasm')
-
-example(imports).then(exports => {
-  // Calling WASM funcion
-  exports.foo()
-})
-```
-
-It works even better with top-level `await`:
-
-```js
-var bar = await require('./bar.wasm')({ ...imports })
-
-// Calling a WASM function
-bar.example()
-```
+<!-- TODO: Link to other packages easliy used with this package -->
 
 ## Install
 
@@ -29,43 +13,56 @@ bar.example()
 npm i -D wasmify
 ```
 
+**Note:** Needs [WABT](https://github.com/webassembly/wabt) for compiling `.wat` and `.wast` files. 
+
 ## Usage
 
-Load it as a transform:
-
-```sh
-browserify -t wasmify
-```
-
-Then you can require WASM files.
-
-Use `--extension` to require files without needing a `.wasm` extension:
-
-```sh
-browserify --extension .wasm -t wasmify
-```
-
-### How does it work?
-
-It transforms any `.wasm` files you require into a JS module that exports something along the lines of:
+Load the transform into Browserify (or another tool).  For example:
 
 ```js
-module.exports = require('wasmify/load')('AGFzbQEAAAABBAFgAAACCwEDZm9vA2JhcgAAAwIBAAcIAQR0ZXN0AAEKBgEEABAACw==')
+browserify app.js -t wasmify > out.js
 ```
 
-Where the WASM module is base64 encoded and passed off to `wasmify/load`.
+Then take a WebAssembly module, like this one:
 
-The `wasmify/load` module returns a function where you can pass imports and then returns a promise containing the module's exports:
+```wat
+(module
+  (func (export "pi") (result f32)
+    (f32.const 3.1415926535)
+  )
+)
+```
+
+And import it inside JS code:
 
 ```js
-var foo = require('./that-file.wasm')
+const test = require('./test.wat')
 
+// Call signature for module:
+// init(imports?) -> Promise<exports?>
 
-foo(imports).then(exports => {
+test().then(exports => {
+  exports.pi()
+  // 3.1415...
+})
+```
+
+Your bundle will contain the WebAssembly as a base64 strings.
+
+You can also use the first parameter as a way to write imports:
+
+```js
+test({
+  foo: { ... },
+  bar: { ... }
+}).then(exports => {
   // ...
 })
 ```
 
-Combine these with `async`/`await` for even better use.
+Another trick is passing `--extension` to `browserify` so you can import the modules without extensions.
 
+```
+browserify app.js -t wasmify --extension .wat > out.js
+```
 

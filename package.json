@@ -1,21 +1,23 @@
 {
   "name": "wasmify",
-  "description": "Require WASM modules with Browserify",
+  "description": "Bundle WebAssembly modules with Browserify.",
   "author": "Jamen Marz (https://git.io/jamen)",
   "repository": "jamen/wasmify",
   "version": "1.2.0",
   "license": "MIT",
   "dependencies": {
     "base64-arraybuffer": "^0.1.5",
+    "tempy": "^0.2.0",
     "through2": "^2.0.3"
   },
   "keywords": [
-    "wasm",
     "webassembly",
     "browserify",
     "browserify-transform",
-    "load",
-    "loader",
-    "require"
+    "import",
+    "require",
+    "wasm",
+    "wat",
+    "wast"
   ]
 }
