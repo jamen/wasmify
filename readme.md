@@ -3,7 +3,7 @@
 
 > Bundle WebAssembly modules with Browserify.
 
-Use this [Browserify transform](https://npmjs.com/browserify) to import [WebAssembly](http://webassembly.org) modules.  All of the `.wasm` files (binary format) are embed in your bundle as base64 strings and compiled for you.  Additionally, `.wat` or `.wast` files (text format) are compiled with [WABT's `wat2wasm` command](https://github.com/webassembly/wabt) before being embed (see also [`webassemby-binary-toolkit`](https://npmjs.com/webassembly-binary-toolkit)).
+Use this [Browserify transform](https://npmjs.com/browserify) to import [WebAssembly](http://webassembly.org) modules.  All of the `.wasm` files are embed as base64 strings and decoded on require.  Additionally, `.wat` or `.wast` files are compiled with [WABT's `wat2wasm` command](https://github.com/webassembly/wabt) before being embed (see also [`webassemby-binary-toolkit`](https://npmjs.com/webassembly-binary-toolkit)).
 
 <!-- TODO: Link to other packages easliy used with this package -->
 
