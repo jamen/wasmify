@@ -3,7 +3,7 @@
   "description": "Bundle WebAssembly modules with Browserify.",
   "author": "Jamen Marz (https://git.io/jamen)",
   "repository": "jamen/wasmify",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "license": "MIT",
   "dependencies": {
     "base64-arraybuffer": "^0.1.5",
