@@ -1,9 +1,9 @@
 
 # wasmify
 
-> Import WebAssembly (and code that compiles to it) with Browserify
+> Import WebAssembly code with Browserify.
 
-Use this [Browserify plugin](https://browserify.org/) to import code such as C, C++, Rust, Wat, or just standalone `.wasm` binaries.  The built-in configs include
+Use this [Browserify plugin](https://browserify.org/) to import code such as C, C++, Rust, Wat, or just `.wasm` binaries.  The ready-made configs include:
 
  - `wasmify.emscripten` for using C/C++ with [Emscripten](https://github.com/kripken/emscripten)
  - `wasmify.wabt` for using WAT with [WebAssembly Binary Toolkit](https://github.com/kripken/emscripten)
@@ -29,7 +29,7 @@ First load the plugin.  Here is an example using the Emscripten config:
 browserify -p [ wasmify -c emscripten ]
 ```
 
-### `wasm()`
+### `wasmify`
 
 The base of the plugin lets you require `.wasm` files.  They get embed as base64.
 
@@ -41,7 +41,7 @@ var sample = createSample()
 sample.main()
 ```
 
-### `wasm(wabt)`
+### `wasmify -c wabt`
 
 For compiling WAT files you can use the [WebAssembly Binary Toolkit](https://github.com/webassembly/wabt) config by: 
 
@@ -58,7 +58,7 @@ var sample = createSample()
 sample.main()
 ```
 
-### `wasm(emscripten)`
+### `wasmify -c emscripten`
 
 For compiling C/C++ files, you can can use the [Emscripten](https://github.com/kripken/emscripten) config:
 
@@ -96,7 +96,8 @@ init(imports) -> exports
 Which looks like:
 
 ```js
-import createFoo from './source.ex'
+var createFoo = require('./source.ex')
 
 var { ...exports } = createFoo({ ...imports })
 ```
+
