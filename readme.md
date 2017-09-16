@@ -1,11 +1,15 @@
 
 # wasmify
 
-> Bundle WebAssembly modules with Browserify.
+> Import WebAssembly (and code that compiles to it) with Browserify
 
-Use this [Browserify transform](https://npmjs.com/browserify) to import [WebAssembly](http://webassembly.org) modules.  All of the `.wasm` files are embed as base64 strings and decoded on require.  Additionally, `.wat` or `.wast` files are compiled with [WABT's `wat2wasm` command](https://github.com/webassembly/wabt) before being embedded (see also [`webassembly-binary-toolkit`](https://npmjs.com/webassembly-binary-toolkit)).
+Use this [Browserify plugin](https://browserify.org/) to import code such as C, C++, Rust, Wat, or just standalone `.wasm` binaries.  The built-in configs include
 
-<!-- TODO: Link to other packages easliy used with this package -->
+ - `wasmify.emscripten` for using C/C++ with [Emscripten](https://github.com/kripken/emscripten)
+ - `wasmify.wabt` for using WAT with [WebAssembly Binary Toolkit](https://github.com/kripken/emscripten)
+ - Others? [Submit an issue](https://github.com/jamen/wasmify).
+
+You can also create your own configs.  See [Configurations](#configurations) and [`config/`](config/) for more details.
 
 ## Install
 
@@ -13,56 +17,86 @@ Use this [Browserify transform](https://npmjs.com/browserify) to import [WebAsse
 npm i -D wasmify
 ```
 
-**Note:** Needs [WABT](https://github.com/webassembly/wabt) for compiling `.wat` and `.wast` files. 
+Note: In order for built-in configs to work, you must install and build their parent projects.
 
 ## Usage
 
-Load the transform into Browserify (or another tool).  For example:
+You can run `wasmify` with or without a config.  Without one, you will only be able to require `.wasm` binaries.  With one, you are able to require source code files and have them be compiled for you.
+
+First load the plugin.  Here is an example using the Emscripten config:
+
+```
+browserify -p [ wasmify -c emscripten ]
+```
+
+### `wasm()`
+
+The base of the plugin lets you require `.wasm` files.  They get embed as base64.
 
 ```js
-browserify app.js -t wasmify > out.js
+var createSample = require('./sample.wasm')
+
+var sample = createSample()
+
+sample.main()
 ```
 
-Then take a WebAssembly module, like this one:
+### `wasm(wabt)`
 
-```wat
-(module
-  (func (export "pi") (result f32)
-    (f32.const 3.1415926535)
-  )
-)
-```
+For compiling WAT files you can use the [WebAssembly Binary Toolkit](https://github.com/webassembly/wabt) config by: 
 
-And import it inside JS code:
+ - Passing the `-c wabt` flag in command line
+ - Passing `wasmify.wabt` into the options
+
+To use the modules would look like this:
 
 ```js
-const test = require('./test.wat')
+var createSample = require('./sample.wat')
 
-// Call signature for module:
-// init(imports?) -> Promise<exports?>
+var sample = createSample()
 
-test().then(exports => {
-  exports.pi()
-  // 3.1415...
-})
+sample.main()
 ```
 
-Your bundle will contain the WebAssembly as a base64 strings.
+### `wasm(emscripten)`
 
-You can also use the first parameter as a way to write imports:
+For compiling C/C++ files, you can can use the [Emscripten](https://github.com/kripken/emscripten) config:
+
+ - Passing `-c emscripten` flag in command line
+ - Passing `wasmify.emscripten` into the options
+
+Using it would appear as:
 
 ```js
-test({
-  foo: { ... },
-  bar: { ... }
-}).then(exports => {
-  // ...
-})
+var main = require('./sample.cc')._main
+
+// Calling C/C++ functoin
+main(3)
 ```
 
-Another trick is passing `--extension` to `browserify` so you can import the modules without extensions.
+### Configurations
 
-```
-browserify app.js -t wasmify --extension .wat > out.js
+The configuration objects are expressed as:
+
+```js
+{
+  compile(code, id): Promise<wasm>,
+  load(wasm): any
+}
 ```
 
+The `compile` function is responsible for turning a source file into WebAssembly.  For example, spawning the command of a compiler and getting the results.
+
+The `load` function gets embed in the bundle, and is responsible for returning the exports for a WebAssembly import.  By default this is simply:
+
+```js
+init(imports) -> exports
+```
+
+Which looks like:
+
+```js
+import createFoo from './source.ex'
+
+var { ...exports } = createFoo({ ...imports })
+```
