@@ -17,7 +17,7 @@ You can also create your own configs.  See [Configurations](#configurations) and
 npm i -D wasmify
 ```
 
-Note: In order for built-in configs to work, you must install and build their parent projects.
+**Note:** In order for the configs to work, you must install their parent projects.
 
 ## Usage
 
@@ -43,12 +43,7 @@ sample.main()
 
 ### `wasmify -c wabt`
 
-For compiling WAT files you can use the [WebAssembly Binary Toolkit](https://github.com/webassembly/wabt) config by: 
-
- - Passing the `-c wabt` flag in command line
- - Passing `wasmify.wabt` into the options
-
-To use the modules would look like this:
+For compiling WAT files you can use the [WebAssembly Binary Toolkit](https://github.com/webassembly/wabt) config.  Using the `.wat` modules would look like:
 
 ```js
 var createSample = require('./sample.wat')
@@ -60,12 +55,7 @@ sample.main()
 
 ### `wasmify -c emscripten`
 
-For compiling C/C++ files, you can can use the [Emscripten](https://github.com/kripken/emscripten) config:
-
- - Passing `-c emscripten` flag in command line
- - Passing `wasmify.emscripten` into the options
-
-Using it would appear as:
+For compiling C/C++ files with [Emscripten](https://github.com/kripken/emscripten).  It would look like:
 
 ```js
 var main = require('./sample.cc')._main
