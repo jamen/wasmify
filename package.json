@@ -3,7 +3,7 @@
   "description": "Require WebAssembly modules with Browserify.",
   "author": "Jamen Marz (https://git.io/jamen)",
   "repository": "jamen/wasmify",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "license": "MIT",
   "files": [
     "index.js"
