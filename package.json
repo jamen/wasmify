@@ -1,34 +1,27 @@
 {
   "name": "wasmify",
-  "description": "Import WebAssembly code with Browserify.",
+  "description": "Require WebAssembly modules with Browserify.",
   "author": "Jamen Marz (https://git.io/jamen)",
   "repository": "jamen/wasmify",
   "version": "2.0.0",
   "license": "MIT",
   "files": [
     "index.js",
-    "config"
   ],
   "scripts": {
     "test": "node test"
   },
   "dependencies": {
     "browserify-wrap": "^1.0.2",
-    "execa": "^0.8.0",
-    "tempy": "^0.2.0",
-    "through2": "^2.0.3",
-    "util-promisify": "^2.1.0"
+    "through2": "^2.0.3"
   },
   "keywords": [
-    "webassembly",
     "browserify",
     "browserify-plugin",
-    "import",
     "require",
     "wasm",
-    "wat",
-    "wast",
-    "emscripten"
+    "webassembly",
+    "modules"
   ],
   "devDependencies": {
     "browserify": "^14.4.0",
