@@ -15,3 +15,16 @@ test('bundles wasm files', t => {
     console.log(code.toString())
   })
 })
+
+test('bundles wasm files', t => {
+  t.plan(2)
+
+  browserify(__dirname + '/fixture/mandelbrot.js')
+  .plugin(wasmify)
+  .bundle(function (err, code) {
+    t.error(err, 'no error')
+    t.true(code, 'wasm bundle')
+    // demo:
+    console.log(code.toString())
+  })
+})

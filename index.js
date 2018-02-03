@@ -14,7 +14,7 @@ function wasmify (b, options) {
   // Add global wasm loader, used by the wasm imports
   b.plugin(wrap, {
     prefix: `\
-      function _loadWasmModule (sync, src) {
+      function _loadWasmModule (sync, src, imports) {
         var len = src.length
         var trailing = src[len-2] == '=' ? 2 : src[len-1] == '=' ? 1 : 0
         var buf = new Uint8Array((len * 3/4) - trailing)
@@ -31,6 +31,13 @@ function wasmify (b, options) {
           buf[b++] = ((third & 3) << 6) | (table[src.charCodeAt(i+3)] & 63)
         }
 
+        if (imports) {
+          // return the the asynchronous WebAssembly.instantiate(buf) since this
+          // is the primary API for compiling and instantiating WebAssembly code
+          // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate
+          return WebAssembly.instantiate(buf)
+        }
+
         return sync ? new WebAssembly.Module(buf) : WebAssembly.compile(buf)
       }
     `.trim()
@@ -39,22 +46,34 @@ function wasmify (b, options) {
   // Transform wasm or source files
   b.transform(function (id, opts) {
     if (!opts) opts = {}
-
     const syncFiles = opts.sync ? opts.sync.map(path.resolve) : []
-
     if (!/\.wasm$/.test(id)) {
       return through()
-    } else {
-      return through(skip, function write () {
-        fs.readFile(id, (err, code) => {
-          if (err) return this.emit('error', err)
-          const sync = syncFiles.indexOf(id) !== -1
-          const wasm = code.toString('base64')
-          this.push(`module.exports=_loadWasmModule(${sync}, '${wasm}')`)
-          this.push(null)
-        })
-      })
     }
+
+    return through(skip, function write () {
+      fs.readFile(id, (err, code) => {
+        if (err) return this.emit('error', err)
+        const sync = syncFiles.indexOf(id) !== -1
+        const wasm = code.toString('base64')
+        // return a function that take into account the imports
+        // an example of an `imports` object:
+        // const imports = {
+        //  env: {
+        //    abortStackOverflow: () => { throw new Error('overflow'); },
+        //    table: new WebAssembly.Table({ initial: 0, maximum: 0, element: 'anyfunc' }),
+        //    tableBase: 0,
+        //    memory: new WebAssembly.Memory({ initial: 512 }),
+        //    memoryBase: 1024,
+        //    STACKTOP: 0,
+        //    STACK_MAX: memory.buffer.byteLength,
+        //   }
+        // }
+
+        this.push(`module.exports=function(imports){return _loadWasmModule(${sync}, '${wasm}', imports)}`)
+        this.push(null)
+      })
+    })
   })
 
   return b

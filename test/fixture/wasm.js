@@ -1,4 +1,4 @@
 
 var sample = require('./sample.wasm')
 
-console.log(sample)
+console.log(sample())
