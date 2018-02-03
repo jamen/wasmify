@@ -1,5 +1,6 @@
 // compile it with: emcc mandelbrot.c -O1 -s WASM=1 -s SIDE_MODULE=1 -o mandelbrot.wasm
 // taken from https://github.com/ColinEberhardt/wasm-mandelbrot/blob/master/emscripten
+// emcc is installed by following instructions on http://webassembly.org/getting-started/developers-guide/
 const int WIDTH = 1200;
 const int HEIGHT = 800;
 unsigned char image[WIDTH * HEIGHT * 4];
