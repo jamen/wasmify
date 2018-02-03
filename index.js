@@ -35,7 +35,7 @@ function wasmify (b, options) {
           // return the the asynchronous WebAssembly.instantiate(buf) since this
           // is the primary API for compiling and instantiating WebAssembly code
           // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate
-          return WebAssembly.instantiate(buf)
+          return WebAssembly.instantiate(buf, imports)
         }
 
         return sync ? new WebAssembly.Module(buf) : WebAssembly.compile(buf)
@@ -58,12 +58,13 @@ function wasmify (b, options) {
         const wasm = code.toString('base64')
         // return a function that take into account the imports
         // an example of an `imports` object:
+        // const memory = new WebAssembly.Memory({ initial: 512 })
         // const imports = {
         //  env: {
         //    abortStackOverflow: () => { throw new Error('overflow'); },
         //    table: new WebAssembly.Table({ initial: 0, maximum: 0, element: 'anyfunc' }),
         //    tableBase: 0,
-        //    memory: new WebAssembly.Memory({ initial: 512 }),
+        //    memory: memory,
         //    memoryBase: 1024,
         //    STACKTOP: 0,
         //    STACK_MAX: memory.buffer.byteLength,
