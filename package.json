@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "browserify-wrap": "^1.0.2",
-    "through2": "^2.0.3"
+    "through2": "^2.0.3",
+    "tempy": "^0.2.1"
   },
   "keywords": [
     "browserify",
@@ -25,7 +26,6 @@
   ],
   "devDependencies": {
     "browserify": "^14.4.0",
-    "tape": "^4.8.0",
-    "tempy": "^0.2.1"
+    "tape": "^4.8.0"
   }
 }
