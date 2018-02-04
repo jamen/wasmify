@@ -31,14 +31,15 @@ function wasmify (b, options) {
           buf[b++] = ((third & 3) << 6) | (table[src.charCodeAt(i+3)] & 63)
         }
 
-        if (imports) {
-          // return the the asynchronous WebAssembly.instantiate(buf) since this
-          // is the primary API for compiling and instantiating WebAssembly code
-          // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate
-          return WebAssembly.instantiate(buf, imports)
+        if (sync) {
+          var mod = new WebAssembly.Module(buf)
+          return imports ? new WebAssembly.Instance(mod, imports) : mod
         }
 
-        return sync ? new WebAssembly.Module(buf) : WebAssembly.compile(buf)
+        // return the the asynchronous WebAssembly.instantiate(buf) since this
+        // is the primary API for compiling and instantiating WebAssembly code
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WebAssembly/instantiate
+        return imports ? WebAssembly.instantiate(buf, imports) : WebAssembly.compile(buf)
       }
     `.trim()
   })
