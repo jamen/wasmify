@@ -25,7 +25,7 @@ Which allows you to import `.wasm` files in your source:
 const sampleModule = require('./sample.wasm')
 
 sampleModule(imports).then(sample => {
-  sample.main(12, 34)
+  sample.instance.exports.main(12, 34)
 })
 ```
 
@@ -49,5 +49,5 @@ const sampleModule = require('sample.wasm')
 
 const sample = sampleModule(imports)
 
-sample.main(12, 34)
+sample.instance.exports.main(12, 34)
 ```
